@@ -28,16 +28,15 @@ struct Punto{
 		}
 		cout<<endl;
 	}
-	double distancia(Punto t){
-		/*ld tempo[dimensiones]=t.get_datos();
+	float distancia(Punto t){
 		float dist=0;
 		for(int i=0;i<dimensiones;++i){
-			float cant=(data[i]*data[i]) - (tempo[i]*tempo[i]);
+			float cant=(data[i]*data[i]) - (t.data[i] * t.data[i]);
 			if(cant<0)
 				cant*=-1;
 			dist+=cant;
 		}
-		return sqrt(dist);*/
+		return sqrt(dist);
 	}
 };
 
@@ -164,8 +163,21 @@ public:
 	float MIN_DIST(Punto p){
 		float result=0;
 		//si esta dentro del MBR la distancia minima es 0
+		
+		
+		
 		for(size_t eje=0; eje<dimensiones; ++eje){
-			result +=pow(p.data[eje] - puntos[eje].first,2);
+			float r;
+			if(p.data[eje] > puntos[eje].first){
+				r=puntos[eje].first;
+			}
+			else if(p.data[eje] < puntos[eje].second){
+				r=puntos[eje].second;
+			}
+			else 
+				r=p.data[eje];
+			
+			result +=pow(p.data[eje] - r, 2);
 		}
 		return result;
 	}

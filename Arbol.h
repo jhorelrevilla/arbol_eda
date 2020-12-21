@@ -89,7 +89,10 @@ struct sort_item_area{
 	}
 };
 ////
-bool sort_mbr(pair<float,Bounding_box> A,pair<float,Bounding_box> B){
+bool sort_mbr(pair<float,Hoja> &A,pair<float,Hoja> &B){
+	return A.first > B.first;
+}
+bool sort_punt(pair<float,Punto> &A,pair<float,Punto> &B){
 	return A.first > B.first;
 }
 /// // // // // // // // // // // // // // // // // // // // // // // // // 
@@ -323,14 +326,24 @@ public:
 	}	
 	///
 	void knn(Punto temp,int k){
-		vector<pair<float,Bounding_box>> grup_MBR;
+		vector<pair<float,hoja_tipo>> grup_MBR;
 		buscar_box(root,temp,grup_MBR);
 		sort(grup_MBR.begin(),grup_MBR.end(),sort_mbr);
+		
+		cout<<grup_MBR[0].second.hoja.size()<<endl;
+		
 		cout<<grup_MBR[0].first<<endl;
+		
+		for(int i=0;i<grup_MBR.size() && k>0;++i){
+			vector<Punto> p_t= buscar_puntos(temp,grup_MBR[i].second,k);
+		}
+		
+		//static_cast<hoja_tipo>(grup_MBR[0]
+		
 		
 	}
 	///
-	void buscar_box(nodo_tipo *nodo_actual,Punto c,vector<pair<float,Bounding_box>> &result){
+	void buscar_box(nodo_tipo *nodo_actual,Punto c,vector<pair<float,hoja_tipo>> &result){
 		//cout<<"cant tamanio "<<nodo_actual->items.size()<<endl;
 		//cout<<"hijos? "<<nodo_actual->tiene_hojas<<endl;
 		if(nodo_actual->bounding.Punto_dentro(c)  && !nodo_actual->tiene_hojas){
@@ -340,28 +353,54 @@ public:
 			}
 		}
 		else{
-			pair<float,Bounding_box> col;
-			
-			float t=nodo_actual->bounding.MIN_DIST(c);
+			pair<float,hoja_tipo> col;
+			for(auto i=nodo_actual->items.begin();i!=nodo_actual->items.end();++i){
+				Hoja hoja_t;
+				hoja_tipo* w=static_cast<hoja_tipo*>(*i);
+				float t=nodo_actual->bounding.MIN_DIST(c);
+				
+				hoja_t.bounding.set_puntos(w->bounding);
+				hoja_t.hoja=w->hoja;
+				id++;
+				col.first=t;
+				col.second=hoja_t;
+				result.push_back(col);
+//				cout<<"---------------------"<<endl;
+//				w->imprimir();
+			}
+			//cout<<"tam hoja "<<hoja_t.hoja.size()<<endl;
 			//cout<<id<<" "<<t<<endl;
-			id++;
-			col.first=t;
-			col.second=nodo_actual->bounding;
-			result.push_back(col);
-//			nodo_actual->bounding
-//			//punto superpone al bounding y no llega a la  hoja
-//			
-//			Hoja *a=static_cast<hoja_tipo*>(nodo_actual->items[0]);
-//				cout<<"----------------"<<endl;
-//				a->imprimir();
-			
 		}
-		   
 	}
 	///
-	void busqueda_rango(nodo_tipo * empieza,typename item_tipo::box region){
+	vector<Punto> buscar_puntos(Punto c,hoja_tipo b,int &cant){
+		vector<pair<float,Punto>> result;
 		
-	}
+		for(int w=0;w<b.hoja.size() && cant>0;++w){
+			cout<<"a "<<endl;
+			pair<float,Punto> xd;
+			
+			xd.first=b.hoja[w].distancia(c);
+			
+			xd.second=b.hoja[w];
+			result.push_back(xd);
+			cant--;
+		}
+		
+		sort(result.begin(),result.end(),sort_punt);
+		vector<Punto> p_r;
+		
+		for(int w=0; w<result.size(); ++w){
+			
+			result[w].second.imprimir();
+		}
+		/*for(int w=0;w<t->hoja.size();++w){
+			pair<float,Punto> t;
+			t.first=t->hoja[w].distancia(c);
+			
+		}
+		*/
+ 	}
 private:
 };
 
